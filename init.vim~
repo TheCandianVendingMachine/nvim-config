@@ -1,0 +1,596 @@
+call plug#begin('~/.vim/plugged')
+
+" Treesitter
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'nvim-treesitter/playground'
+
+" Collection of common configurations for the Nvim LSP client
+Plug 'neovim/nvim-lspconfig'
+
+" Easy installer for language LSPs
+" Plug 'kabouzeid/nvim-lspinstall'
+
+" Lisp tooling
+Plug 'Olical/conjure'
+Plug 'vlime/vlime', {'rtp': 'vim/'}
+
+" R Markdown
+Plug 'vim-pandoc/vim-pandoc'
+Plug 'vim-pandoc/vim-pandoc-syntax'
+Plug 'vim-pandoc/vim-rmarkdown'
+
+" Autocompletion framework for built-in LSP
+Plug 'hrsh7th/nvim-compe'
+
+" Get list of LSP diagnostics
+Plug 'folke/trouble.nvim'
+
+" Adds extra functionality over rust analyzer
+Plug 'simrat39/rust-tools.nvim'
+
+" Snippet engine to handle LSP snippets
+" Plug 'hrsh7th/vim-vsnip'
+
+" Telescope fuzzy-finding
+Plug 'nvim-lua/popup.nvim'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim'
+
+" Ale linter
+" Plug 'w0rp/ale'
+
+" Gutentags for tags
+" Plug 'ludovicchabant/vim-gutentags'
+
+" Gruvbox colorscheme
+Plug 'rktjmp/lush.nvim'
+Plug 'npxbr/gruvbox.nvim'
+" Status line
+" Plug 'itchyny/lightline.vim'
+" Ale lightline integration
+" Plug 'maximbaz/lightline-ale'
+Plug 'hoob3rt/lualine.nvim'
+Plug 'kyazdani42/nvim-web-devicons'
+
+" Latex support
+Plug 'lervag/vimtex',
+  \ { 'for': 'tex' }
+" Plug 'SirVer/ultisnips'
+
+" Easy vim-tmux navigation
+Plug 'christoomey/vim-tmux-navigator'
+
+" Commenting operator
+" gcc to comment, gc comment operator,
+" gcgc to uncomment lines
+Plug 'tomtom/tcomment_vim'
+" Deal with parantheses, quotes, etc
+Plug 'tpope/vim-surround'
+" Find matching 2 character sequences
+Plug 'justinmk/vim-sneak'
+
+call plug#end()
+
+" -----------------------------------------------------------------------------
+" GENERAL CONFIGURATION ----------------------------------------------------------------------------
+
+" Turn on syntax highlighting
+syntax enable
+
+" Disable filetype-based auto-indentation
+filetype indent off
+" Enable plugin-based auto-indentation
+filetype plugin indent on
+
+" No 'vi' compatibility
+set nocompatible
+
+" Show matching brackets
+set showmatch
+
+" Line numbering
+set number relativenumber
+
+" Tab behavior
+set tabstop=4
+set shiftwidth=4
+set expandtab
+" Leave 8 lines at the bottom of the screen
+set scrolloff=8
+
+" Splitting
+set splitright
+set splitbelow
+
+" Permanent undo
+" Maintain all the actions for a file for undo between editing sessions
+set undodir=~/.vimdid
+set undofile
+"
+" Searching
+" Only do case-sensitive searching if it contains a capital letter
+set ignorecase
+set smartcase
+"
+" Turn off auto comment insertion on next lines
+au Filetype * setlocal fo-=cro
+
+" Spell-check
+set nospell
+set spelllang=en_us
+" C-l will go back and correct mispelled word while in insert mode.
+inoremap <C-l> <c-g>u<Esc>[s1z=`]a<c-g>u
+
+" Color column at 100 characters
+set colorcolumn=100
+
+let g:pandoc#modules#disabled = ["folding"]
+
+" -----------------------------------------------------------------------------
+" UI CONFIGURATION
+" -----------------------------------------------------------------------------
+
+" Set termguicolors to fix true color
+if exists('+termguicolors')
+  let &t_8f="\<Esc>[38;2;%lu;%lu;%lum"
+  let &t_8b="\<Esc>[48;2;%lu;%lu;%lum"
+  set termguicolors
+endif
+
+" Colorscheme
+colorscheme gruvbox
+set background=dark
+let g:gruvbox_constrast_dark='hard'
+
+" Fix transparency
+hi Normal guibg=NONE ctermbg=NONE
+
+if !has('gui-running')
+    set t_Co=256
+endif
+
+lua <<EOF
+require'lualine'.setup {
+  options = {
+    icons_enabled = false,
+    theme = 'gruvbox',
+    component_separators = {'', ''},
+    section_separators = {'', ''},
+    disabled_filetypes = {}
+  },
+  sections = {
+    lualine_a = {'mode'},
+    lualine_b = {'branch'},
+    lualine_c = {'filename', {'diagnostics', sources = {'nvim_lsp'}}},
+    lualine_x = {'encoding', 'fileformat', 'filetype'},
+    lualine_y = {'progress'},
+    lualine_z = {'location'}
+  },
+  inactive_sections = {
+    lualine_a = {},
+    lualine_b = {},
+    lualine_c = {'filename'},
+    lualine_x = {'location'},
+    lualine_y = {},
+    lualine_z = {}
+  },
+  tabline = {},
+  extensions = {}
+}
+EOF
+
+lua << EOF
+  require("trouble").setup {
+    -- your configuration comes here
+    -- or leave it empty to use the default settings
+    -- refer to the configuration section below
+  }
+EOF
+
+" let g:lightline = {'active':{'left':[], 'right':[]}}
+"
+" " Set colorscheme
+" let g:lightline.colorscheme = 'gruvbox'
+"
+" " Left side components
+" let g:lightline.active.left = [
+"   \   ['mode'],
+"   \   ['readonly', 'filename', 'modified'],
+"   \   ['linter_checking', 'linter_errors', 'linter_warnings', 'linter_ok'],
+"   \ ]
+"
+" " Right side components
+" let g:lightline.active.right = [
+"   \   ['percent', 'lineinfo'],
+"   \   ['fileformat', 'fileencoding', 'filetype'],
+"   \   ['gutentags'],
+"   \ ]
+"
+" " Ale lightline status
+" let g:lightline.component_expand = {
+"   \  'linter_checking': 'lightline#ale#checking',
+"   \  'linter_warnings': 'lightline#ale#warnings',
+"   \  'linter_errors': 'lightline#ale#errors',
+"   \  'linter_ok': 'lightline#ale#ok',
+"   \  'gutentags': 'gutentags#statusline',
+"   \ }
+"
+" let g:lightline.component_type = {
+"   \ 'linter_checking': 'left',
+"   \ 'linter_warnings': 'warning',
+"   \ 'linter_errors': 'error',
+"   \ 'linter_ok': 'left',
+"   \ }
+
+" -----------------------------------------------------------------------------
+" ALE CONFIGURATION
+" -----------------------------------------------------------------------------
+
+let g:ale_open_list = 0
+let g:ale_lint_on_enter = 1
+let g:ale_lint_on_text_changed = 0
+let g:ale_lint_on_insert_leave = 0
+let g:ale_lint_on_save = 1
+let g:ale_list_window_size = 4
+let g:ale_fix_on_save = 1
+
+let g:ale_linters = {
+  \ 'c': ['clang'],
+  \ 'cpp': ['clang'],
+  \ 'clojure': ['clj-kondo', 'joker'],
+  \ 'java': ['javac'],
+  \ 'ocaml': ['merlin'],
+  \ 'python': ['flake8', 'pylint'],
+  \ 'rust': ['cargo'],
+  \ 'typescript': ['tsc'],
+  \ }
+
+let g:ale_fixers = {
+  \   '*': [
+  \     'trim_whitespace',
+  \     'remove_trailing_lines',
+  \   ],
+  \   'rust': [
+  \     'rustfmt',
+  \   ],
+  \ }
+
+let g:ale_rust_cargo_use_clippy = 1
+let g:ale_rust_cargo_check_tests = 1
+let g:ale_rust_cargo_check_examples = 1
+let g:ale_rust_cargo_use_check = 0
+let g:ale_rust_cargo_clippy_options = ""
+let g:rustfmt_commmand = "rustfmt"
+
+let g:ale_c_gcc_options = '-Wall -std=c99'
+let g:ale_c_clang_options = '-Wall -std=c99'
+let g:ale_c_parse_makefile = 1
+
+let g:ale_cpp_gcc_options = '-Wall -std=c++17'
+let g:ale_cpp_clang_options = '-Wall -std=c++17'
+
+" -----------------------------------------------------------------------------
+" Gutentags
+" -----------------------------------------------------------------------------
+
+" Refresh status line on gutentags update
+" augroup GutentagsStatusLineRefresher
+"     autocmd!
+"     autocmd User GutentagsUpdating call lightline#update()
+"     autocmd User GutentagsUpdated call lightline#update()
+" augroup END
+
+" -----------------------------------------------------------------------------
+" CUSTOM KEYBINDINGS
+" -----------------------------------------------------------------------------
+
+let mapleader = "\<Space>"
+
+" Rebind term-mode-exit to something reasonable
+tnoremap <Esc> <C-\><C-n>
+
+" Jump to start and end of line using home row keys
+noremap H ^
+noremap L $
+
+" Move by line
+nnoremap j gj
+nnoremap k gk
+
+" Rebind split movements
+nmap <silent> <C-h> :wincmd h<cr>
+nmap <silent> <C-l> :wincmd l<cr>
+nmap <silent> <C-k> :wincmd k<cr>
+nmap <silent> <C-j> :wincmd j<cr>
+
+" Open .vimrc in a split to allow quick edits and reload
+nnoremap <leader>ev :edit ~/.config/nvim/init.vim<cr>
+nnoremap <leader>sv :source ~/.config/nvim/init.vim<cr>
+
+" Toggle ale error/warning list at bottom of screen
+" nnoremap <silent> <leader>l :call AleErrorListToggle()<cr>
+nnoremap <leader>l <cmd>TroubleToggle<cr>
+
+" When pressing enter after open brace, insert closing brace on line below
+inoremap {<CR>  {<CR>}<Esc>O
+
+" Find files using Telescope command-line sugar.
+nnoremap <C-p>     <cmd>Telescope find_files<cr>
+nnoremap <C-s>     <cmd>Telescope live_grep<cr>
+nnoremap <leader>b <cmd>Telescope buffers<cr>
+nnoremap <leader>h <cmd>Telescope help_tags<cr>
+
+" -----------------------------------------------------------------------------
+" LSP+COMPLETION CONFIGURATION
+" -----------------------------------------------------------------------------
+
+" Set completeopt to have a better completion experience
+set completeopt=menu,menuone,noselect
+
+" Avoid showing extra messages when using completion
+set shortmess+=c
+
+" Configure lsp
+" https://github.com/neovim/nvim-lspconfig#rust_analyzer
+lua <<EOF
+
+-- nvim_lsp object
+local nvim_lsp = require'lspconfig'
+
+local on_attach = function(client)
+end
+
+local opts = {
+    tools = { -- rust-tools options
+        autoSetHints = true,
+        hover_with_actions = true,
+        inlay_hints = {
+            show_parameter_hints = false,
+            parameter_hints_prefix = "",
+            other_hints_prefix = "",
+        },
+    },
+
+    -- all the opts to send to nvim-lspconfig
+    -- these override the defaults set by rust-tools.nvim
+    -- see https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md#rust_analyzer
+    server = {
+        -- on_attach is a callback called when the language server attachs to the buffer
+        -- on_attach = on_attach,
+        settings = {
+            -- to enable rust-analyzer settings visit:
+            -- https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/user/generated_config.adoc
+            ["rust-analyzer"] = {
+                -- enable clippy on save
+                checkOnSave = {
+                    command = "clippy"
+                },
+            }
+        }
+    },
+}
+
+require('rust-tools').setup(opts)
+
+-- Enable diagnostics
+vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
+    vim.lsp.diagnostic.on_publish_diagnostics, {
+        virtual_text = true,
+        signs = true,
+        update_in_insert = true,
+    }
+)
+EOF
+
+" Code navigation shortcuts
+" as found in :help lsp
+nnoremap <silent> <c-]> <cmd>lua vim.lsp.buf.definition()<CR>
+nnoremap <silent> K     <cmd>lua vim.lsp.buf.hover()<CR>
+nnoremap <silent> gD    <cmd>lua vim.lsp.buf.implementation()<CR>
+nnoremap <silent> <c-k> <cmd>lua vim.lsp.buf.signature_help()<CR>
+nnoremap <silent> 1gD   <cmd>lua vim.lsp.buf.type_definition()<CR>
+nnoremap <silent> gr    <cmd>lua vim.lsp.buf.references()<CR>
+nnoremap <silent> g0    <cmd>lua vim.lsp.buf.document_symbol()<CR>
+nnoremap <silent> gW    <cmd>lua vim.lsp.buf.workspace_symbol()<CR>
+" rust-analyzer does not yet support goto declaration
+" re-mapped `gd` to definition
+nnoremap <silent> gd    <cmd>lua vim.lsp.buf.definition()<CR>
+nnoremap <silent> gi    <cmd>lua vim.lsp.buf.implementation()<CR>
+"nnoremap <silent> gd    <cmd>lua vim.lsp.buf.declaration()<CR>
+
+" Code actions
+nnoremap <silent> ga    <cmd>lua vim.lsp.buf.code_action()<CR>
+
+" Completion
+lua <<EOF
+require'compe'.setup {
+  enabled = true;
+  autocomplete = true;
+  debug = false;
+  min_length = 1;
+  preselect = 'enable';
+  throttle_time = 80;
+  source_timeout = 200;
+  incomplete_delay = 400;
+  max_abbr_width = 100;
+  max_kind_width = 100;
+  max_menu_width = 100;
+
+  source = {
+    path = true;
+    buffer = true;
+    calc = true;
+    vsnip = true;
+    nvim_lsp = true;
+    nvim_lua = true;
+    spell = true;
+    tags = true;
+    snippets_nvim = true;
+  };
+}
+EOF
+
+inoremap <silent><expr> <C-Space> compe#complete()
+inoremap <silent><expr> <CR>      compe#confirm('<CR>')
+inoremap <silent><expr> <C-e>     compe#close('<C-e>')
+
+" Completion bindings
+lua <<EOF
+local t = function(str)
+    return vim.api.nvim_replace_termcodes(str, true, true, true)
+end
+
+local check_back_space = function()
+    local col = vim.fn.col('.') - 1
+    if col == 0 or vim.fn.getline('.'):sub(col, col):match('%s') then
+        return true
+    else
+        return false
+    end
+end
+
+-- Use (s-)tab to:
+--- move to prev/next item in completion menuone
+-- _G.tab_complete = function()
+--     if vim.fn.pumvisible() == 1 then
+--         return t "<C-n>"
+--     elseif check_back_space() then
+--         return t "<Tab>"
+--     else
+--         return vim.fn['compe#complete']()
+--     end
+-- end
+-- _G.s_tab_complete = function()
+--     if vim.fn.pumvisible() == 1 then
+--         return t "<C-p>"
+--     else
+--         return t "<S-Tab>"
+--     end
+-- end
+
+-- vim.api.nvim_set_keymap("i", "<Tab>", "v:lua.tab_complete()", {expr = true})
+-- vim.api.nvim_set_keymap("s", "<Tab>", "v:lua.tab_complete()", {expr = true})
+vim.api.nvim_set_keymap("i", "<S-Tab>", "v:lua.s_tab_complete()", {expr = true})
+vim.api.nvim_set_keymap("s", "<S-Tab>", "v:lua.s_tab_complete()", {expr = true})
+EOF
+
+" lua <<EOF
+" require'lspinstall'.setup() -- important
+"
+" local servers = require'lspinstall'.installed_servers()
+" for _, server in pairs(servers) do
+"   require'lspconfig'[server].setup{}
+" end
+" EOF
+
+" have a fixed column for the diagnostics to appear in
+" this removes the jitter when warnings/errors flow in
+set signcolumn=yes
+
+" Set updatetime for CursorHold
+" 300ms of no cursor movement to trigger CursorHold
+set updatetime=300
+" Show diagnostic popup on cursor hover
+" autocmd CursorHold * lua vim.lsp.diagnostic.show_line_diagnostics()
+
+" Goto previous/next diagnostic warning/error
+nnoremap <silent> g[ <cmd>lua vim.lsp.diagnostic.goto_prev()<CR>
+nnoremap <silent> g] <cmd>lua vim.lsp.diagnostic.goto_next()<CR>
+
+" -----------------------------------------------------------------------------
+" Treesitter Configuration
+" -----------------------------------------------------------------------------
+
+lua <<EOF
+require'nvim-treesitter.configs'.setup {
+  highlight = {
+    enable = true,
+  },
+}
+EOF
+
+" -----------------------------------------------------------------------------
+" LATEX CONFIGURATION
+" -----------------------------------------------------------------------------
+
+" Vimtex config
+let g:tex_flavor='latex'
+let g:vimtex_view_method='zathura'
+let g:vimtex_quickfix_mode=0
+
+set conceallevel=1
+let g:tex_conceal='abdmg'
+
+" Since we are using neovim
+" Note: this relies on neovim-remote, which can be installed with
+"       `let g:vimtex_compiler_progname = 'nvr'`
+let g:vimtex_compiler_progname = 'nvr'
+
+let g:UltiSnipsExpandTrigger = '<tab>'
+let g:UltiSnipsJumpForwardTrigger = '<tab>'
+let g:UltiSnipsJumpBackwardTrigger = '<s-tab>'
+let g:UltiSnipsSnippetDirectories = [$HOME.'/.vim/UltiSnips']
+
+" -----------------------------------------------------------------------------
+" LANGUAGE-SPECIFIC CONFIGURATION
+" -----------------------------------------------------------------------------
+
+augroup python_files
+  autocmd!
+  autocmd FileType python set tabstop=4
+  autocmd FileType python set softtabstop=4
+  autocmd FileType python set shiftwidth=4
+  autocmd FileType python set expandtab
+  autocmd FileType python set autoindent
+augroup END
+
+augroup js_files
+  autocmd!
+  autocmd FileType javascript,typescript,typescriptreact set tabstop=2
+  autocmd FileType javascript,typescript,typescriptreact set softtabstop=2
+  autocmd FileType javascript,typescript,typescriptreact set shiftwidth=2
+  autocmd FileType javascript,typescript,typescriptreact set expandtab
+  autocmd FileType javascript,typescript,typescriptreact set autoindent
+augroup END
+
+" augroup assembler
+"     autocmd!
+"     autocmd FileType asm set filetype=mips
+"     autocmd BufRead,BufNewFile *.nasm set filetype=nasm
+" augroup END
+
+" augroup javascript
+"     autocmd!
+"     autocmd BufRead,BufNewFile *.js.liquid set filetype=javascript
+"     autocmd Filetype javascript,typescript set tabstop=2
+"     autocmd Filetype javascript,typescript set softtabstop=2
+"     autocmd Filetype javascript,typescript set shiftwidth=2
+" augroup END
+
+augroup html
+    autocmd!
+    autocmd Filetype html             set tabstop=2
+    autocmd Filetype html             set softtabstop=2
+    autocmd Filetype html             set shiftwidth=2
+augroup END
+
+" -----------------------------------------------------------------------------
+" CUSTOM COMMANDS
+" -----------------------------------------------------------------------------
+
+" RELATIVE LINE NUMBER COMMANDS
+augroup numbertoggle
+  autocmd!
+  autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
+  autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
+augroup END
+
+function! AleErrorListToggle()
+  if g:ale_open_list
+    :lclose
+    let g:ale_open_list = 0
+  else
+    :lopen
+    let g:ale_open_list = 1
+  endif
+endfunction
