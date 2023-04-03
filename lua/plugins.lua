@@ -18,6 +18,9 @@ return require('packer').startup(function(use)
 
     -- nvim-lsp configuration (relies on cmp-nvim-lsp)
     use { "neovim/nvim-lspconfig", after = "cmp-nvim-lsp", config = [[require("config.lsp")]] }
+
+    use { "simrat39/rust-tools.nvim", event = "VimEnter", ft = { "rust" } }
+
     -- Treesitter parser
     use { "nvim-treesitter/nvim-treesitter", event = "BufEnter", run = ":TSUpdate", config = [[require("config.treesitter")]] }
 
