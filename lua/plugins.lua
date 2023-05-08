@@ -6,6 +6,8 @@ return require('packer').startup(function(use)
     use { "lewis6991/impatient.nvim", config = [[require("impatient")]] }
     use { "wbthomason/packer.nvim", opt = true }
 
+    use { "catppuccin/nvim", as = "catppuccin", config = [[require("config.catppuccin")]] }
+
     use { "onsails/lspkind-nvim", event = "VimEnter" }
     -- Auto-complete engine
     use { "hrsh7th/nvim-cmp", after = "lspkind-nvim", config = [[require("config.nvim-cmp")]] }
