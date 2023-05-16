@@ -1,5 +1,11 @@
 local cmp = require 'cmp'
 cmp.setup({
+    window = {
+        documentation = cmp.config.window.bordered(),
+        completion = cmp.config.window.bordered({
+            winhighlight = 'Normal;CmpPmenu;CursorLine:PmenuSel,Search:None'
+        })
+    },
     formatting = {
         mode = 'text',
         maxwidth = 50,
