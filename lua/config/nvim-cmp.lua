@@ -3,7 +3,7 @@ cmp.setup({
     window = {
         documentation = cmp.config.window.bordered(),
         completion = cmp.config.window.bordered({
-            winhighlight = 'Normal;CmpPmenu;CursorLine:PmenuSel,Search:None'
+            winhighlight = 'Normal:CmpPmenu,CursorLine:PmenuSel,Search:None'
         })
     },
     formatting = {
