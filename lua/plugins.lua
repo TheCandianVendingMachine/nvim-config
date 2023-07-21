@@ -26,10 +26,6 @@ return require('packer').startup(function(use)
     -- Treesitter parser
     use { "nvim-treesitter/nvim-treesitter", event = "BufEnter", run = ":TSUpdate", config = [[require("config.treesitter")]] }
 
-    -- Gruvbox colorscheme
-    use { "rktjmp/lush.nvim", opt = true }
-    use { "npxbr/gruvbox.nvim", opt = true }
-
     use { "kyazdani42/nvim-web-devicons", event = "VimEnter" }
 
     use { "nvim-lualine/lualine.nvim", event = "VimEnter", config = [[require("config.statusline")]] }
@@ -38,7 +34,9 @@ return require('packer').startup(function(use)
     use { "tpope/vim-surround", event = "VimEnter" }
     use { "justinmk/vim-sneak", event = "VimEnter" }
 
-    use { "sbdchd/neoformat", cmd = { "Newformat" } }
+    use { "sbdchd/neoformat", cmd = { "Neoformat" } }
+
+    use { "lukas-reineke/indent-blankline.nvim", event = "VimEnter", config = [[require("config.indent")]] }
 
     if utils.executable("tmux") then
     use { "christoomey/vim-tmux-navigator" }
