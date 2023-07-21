@@ -38,6 +38,9 @@ return require('packer').startup(function(use)
 
     use { "lukas-reineke/indent-blankline.nvim", event = "VimEnter", config = [[require("config.indent")]] }
 
+    use { "nvim-lua/plenary.nvim" }
+    use { "nvim-telescope/telescope.nvim", config = [[require("config.telescope")]] }
+
     if utils.executable("tmux") then
     use { "christoomey/vim-tmux-navigator" }
     end
