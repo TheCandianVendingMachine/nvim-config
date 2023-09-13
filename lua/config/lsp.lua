@@ -7,6 +7,11 @@ local lsp_flags = {
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
+lsp['tsserver'].setup {
+    filetypes = { "typescript", "typescriptreact", "typescript.tsx" },
+    cmd = { "typescript-language-server", "--stdio" }
+}
+
 lsp['pyright'].setup{
     flags = lsp_flags,
     capabilities = capabilities

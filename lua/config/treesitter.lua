@@ -1,6 +1,6 @@
 local ts = require 'nvim-treesitter.configs'
 ts.setup {
-    ensure_installed = { "python", "rust", "lua", "html", "dockerfile" },
+    ensure_installed = { "python", "typescript", "rust", "lua", "html", "dockerfile", "markdown" },
     sync_install = false,
     auto_install = true,
 
