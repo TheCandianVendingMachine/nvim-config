@@ -1,5 +1,8 @@
 -- Inspired by https://github.com/jdhao/nvim-config
+
+vim.g.do_filetype_lua = 1
 require('plugins')
+require('config')
 
 local core_conf_files = {
     "globals.vim",      -- some global settings

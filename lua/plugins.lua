@@ -22,7 +22,12 @@ return require('packer').startup(function(use)
     use { "neovim/nvim-lspconfig", after = "cmp-nvim-lsp", config = [[require("config.lsp")]] }
 
     use { "simrat39/rust-tools.nvim", event = "VimEnter", ft = { "rust" } }
-
+    use {
+        'saecki/crates.nvim', requires = { 'nvim-lua/plenary.nvim' },
+        config = function()
+            require('crates').setup()
+        end,
+    }
     -- Treesitter parser
     use { "nvim-treesitter/nvim-treesitter", event = "BufEnter", run = ":TSUpdate", config = [[require("config.treesitter")]] }
 
@@ -49,4 +54,7 @@ return require('packer').startup(function(use)
     use { "lervag/vimtex", ft = { "tex" } }
     end
 
+    if packer_bootstrap then
+      require('packer').sync()
+    end
 end)
