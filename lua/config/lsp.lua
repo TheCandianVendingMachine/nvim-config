@@ -60,7 +60,12 @@ require('rust-tools').setup({
     }
 })
 
-lsp['clangd'].setup({})
+lsp['clangd'].setup({
+    cmd = {
+        "clangd",
+        "--clang-tidy"
+    }
+})
 
 vim.keymap.set('n', '<space>e', vim.diagnostic.open_float)
 vim.keymap.set('n', ']e', vim.diagnostic.goto_next)
