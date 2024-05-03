@@ -46,6 +46,8 @@ return require('packer').startup(function(use)
     use { "nvim-lua/plenary.nvim" }
     use { "nvim-telescope/telescope.nvim", config = [[require("config.telescope")]] }
 
+    use { "FabijanZulj/blame.nvim", config = [[require("config.blame")]] }
+
     if utils.executable("tmux") then
     use { "christoomey/vim-tmux-navigator" }
     end
