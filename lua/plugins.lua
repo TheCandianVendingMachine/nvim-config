@@ -49,12 +49,19 @@ return require('packer').startup(function(use)
     use { "FabijanZulj/blame.nvim", config = [[require("config.blame")]] }
 
     if utils.executable("tmux") then
-    use { "christoomey/vim-tmux-navigator" }
+        use { "christoomey/vim-tmux-navigator" }
     end
 
     if utils.executable("latex") then
-    use { "lervag/vimtex", ft = { "tex" } }
+        use { "lervag/vimtex", ft = { "tex" } }
     end
+
+    use {
+        'RaafatTurki/hex.nvim',
+        config = function()
+            require('hex').setup()
+        end
+    }
 
     if packer_bootstrap then
       require('packer').sync()
