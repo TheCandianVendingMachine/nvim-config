@@ -23,45 +23,20 @@ return {
             end,
             desc = 'LSP: Disable hover capability from Ruff',
         })
+
+        vim.lsp.config['clangd'] = require('lsp.clangd')
+        vim.lsp.enable('clangd')
+
+        vim.lsp.config['omnisharp'] = require('lsp.omnisharp')
+        vim.lsp.enable('omnisharp')
+
+        vim.lsp.config['pyright'] = require('lsp.pyright')
+        vim.lsp.enable('pyright')
+
+        vim.lsp.config['ruff'] = require('lsp.ruff')
+        vim.lsp.enable('ruff')
+
+        vim.lsp.config['rust_analyzer'] = require('lsp.rust_analyzer')
+        vim.lsp.enable('rust_analyzer')
     end,
-    config = function(lazy, opts)
-        lsp = require('lspconfig')
-        lsp.pyright.setup(opts.servers.pyright)
-        lsp.ruff.setup(opts.servers.ruff)
-        lsp.rust_analyzer.setup(opts.servers.rust_analyzer)
-        lsp.clangd.setup(opts.servers.clangd)
-        lsp.omnisharp.setup(opts.servers.omnisharp)
-    end,
-    opts = {
-        servers = {
-            ruff = {},
-            pyright = {
-                settings = {
-                    pyright = {
-                        disableOrganizeImports = true,
-                    },
-                    python = {
-                        analysis = {
-                            ignore = { '*' },
-                            typeCheckingMode = 'standard',
-                            diagnosticMode = 'workspace'
-                        },
-                    }
-                }
-            },
-            rust_analyzer = {},
-            clangd = {
-                cmd = { "clangd", "--clang-tidy" }
-            },
-            omnisharp = {
-                cmd = { "dotnet", "/home/bailey/software/omnisharp/dotnet/OmniSharp.dll" },
-                enable_editorconfig_support = true,
-                enable_ms_build_load_projects_on_demand = false,
-                organize_imports_on_format = true,
-                enable_import_completion = true,
-                analyze_open_documents_only = false,
-                -- root_dir = lsp.util.root_pattern("*.csproj","*.sln")
-            }
-        },
-    }
 }
