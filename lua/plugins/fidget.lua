@@ -11,7 +11,8 @@ return {
         notification = {
             window = {
                 winblend = 30
-            }
+            },
+            override_vim_notify = true
         }
     },
 }
